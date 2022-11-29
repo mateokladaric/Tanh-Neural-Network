@@ -72,38 +72,6 @@ class NeuralNetwork
         }
     }
 
-    private void activateSigmoid()
-    {
-        for (int layerIdx = 1; layerIdx < values.Count(); layerIdx++)
-        {
-            for (int neuronIdx = 0; neuronIdx < values[layerIdx].Count(); neuronIdx++)
-            {
-                float sum = 0;
-                for (int prevNeuronIdx = 0; prevNeuronIdx < values[layerIdx - 1].Count(); prevNeuronIdx++)
-                {
-                    sum += values[layerIdx - 1][prevNeuronIdx] * weights[layerIdx - 1][prevNeuronIdx][neuronIdx];
-                }
-                values[layerIdx][neuronIdx] = (float)(1 / (1 + Math.Exp(-sum - biases[layerIdx][neuronIdx])));
-            }
-        }
-    }
-
-    private void activateReLu()
-    {
-        for (int layerIdx = 1; layerIdx < values.Count(); layerIdx++)
-        {
-            for (int neuronIdx = 0; neuronIdx < values[layerIdx].Count(); neuronIdx++)
-            {
-                float sum = 0;
-                for (int prevNeuronIdx = 0; prevNeuronIdx < values[layerIdx - 1].Count(); prevNeuronIdx++)
-                {
-                    sum += values[layerIdx - 1][prevNeuronIdx] * weights[layerIdx - 1][prevNeuronIdx][neuronIdx];
-                }
-                values[layerIdx][neuronIdx] = Math.Max(0, sum + biases[layerIdx][neuronIdx]);
-            }
-        }
-    }
-
     public float[] getTanhOutput(float[] inputs)
     {
         Contract.Requires(inputs.Length == values[0].Count());
@@ -149,5 +117,11 @@ class NeuralNetwork
                 }
             }
         }
+    }
+
+    public void Train(float[] inputs, float[] correctOutput)
+    {
+        getTanhOutput(inputs);
+        backPropagate(correctOutput);
     }
 }
