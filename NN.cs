@@ -1,11 +1,11 @@
 class NeuralNetwork
 {
-    private const float learningRate = 0.0333f;
+    private const double learningRate = 0.00015f;
 
-    private List<List<float>> biases;
-    private List<List<float>> errors;
-    private List<List<float>> values;
-    private List<List<List<float>>> weights;
+    private List<List<double>> biases;
+    private List<List<double>> errors;
+    private List<List<double>> values;
+    private List<List<List<double>>> weights;
 
     private Random r = new Random();
 
@@ -17,15 +17,15 @@ class NeuralNetwork
 
     private void initNeurons(int[] layers)
     {
-        biases = new List<List<float>>();
-        errors = new List<List<float>>();
-        values = new List<List<float>>();
+        biases = new List<List<double>>();
+        errors = new List<List<double>>();
+        values = new List<List<double>>();
 
         for (int layerIdx = 0; layerIdx < layers.Length; layerIdx++)
         {
-            biases.Add(new List<float>());
-            errors.Add(new List<float>());
-            values.Add(new List<float>());
+            biases.Add(new List<double>());
+            errors.Add(new List<double>());
+            values.Add(new List<double>());
 
             for (int neuronIdx = 0; neuronIdx < layers[layerIdx]; neuronIdx++)
             {
@@ -38,19 +38,19 @@ class NeuralNetwork
 
     private void initWeights(int[] layers)
     {
-        weights = new List<List<List<float>>>();
+        weights = new List<List<List<double>>>();
 
         for (int layerIdx = 0; layerIdx < layers.Length - 1; layerIdx++)
         {
-            weights.Add(new List<List<float>>());
+            weights.Add(new List<List<double>>());
 
             for (int neuronIdx = 0; neuronIdx < layers[layerIdx]; neuronIdx++)
             {
-                weights[layerIdx].Add(new List<float>());
+                weights[layerIdx].Add(new List<double>());
 
                 for (int nextNeuronIdx = 0; nextNeuronIdx < layers[layerIdx + 1]; nextNeuronIdx++)
                 {
-                    weights[layerIdx][neuronIdx].Add((float)r.NextDouble() - 0.5f);
+                    weights[layerIdx][neuronIdx].Add(r.NextDouble() - 0.5f);
                 }
             }
         }
@@ -62,17 +62,17 @@ class NeuralNetwork
         {
             for (int neuronIdx = 0; neuronIdx < values[layerIdx].Count(); neuronIdx++)
             {
-                float sum = 0;
+                double sum = 0;
                 for (int prevNeuronIdx = 0; prevNeuronIdx < values[layerIdx - 1].Count(); prevNeuronIdx++)
                 {
                     sum += values[layerIdx - 1][prevNeuronIdx] * weights[layerIdx - 1][prevNeuronIdx][neuronIdx];
                 }
-                values[layerIdx][neuronIdx] = (float)Math.Tanh(sum + biases[layerIdx][neuronIdx]);
+                values[layerIdx][neuronIdx] = Math.Tanh(sum + biases[layerIdx][neuronIdx]);
             }
         }
     }
 
-    public float[] getTanhOutput(float[] inputs)
+    public double[] getTanhOutput(double[] inputs)
     {
         Contract.Requires(inputs.Length == values[0].Count());
 
@@ -86,7 +86,7 @@ class NeuralNetwork
         return values[values.Count() - 1].ToArray();
     }
 
-    public void backPropagate(float[] correctOutput)
+    public void backPropagate(double[] correctOutput)
     {
         for (int neuronIdx = 0; neuronIdx < values[values.Count() - 1].Count(); neuronIdx++)
         {
@@ -97,7 +97,7 @@ class NeuralNetwork
         {
             for (int neuronIdx = 0; neuronIdx < values[layerIdx].Count(); neuronIdx++)
             {
-                float error = 0;
+                double error = 0;
                 for (int nextNeuronIdx = 0; nextNeuronIdx < values[layerIdx + 1].Count(); nextNeuronIdx++)
                 {
                     error += errors[layerIdx + 1][nextNeuronIdx] * weights[layerIdx][neuronIdx][nextNeuronIdx];
@@ -119,7 +119,7 @@ class NeuralNetwork
         }
     }
 
-    public void Train(float[] inputs, float[] correctOutput)
+    public void Train(double[] inputs, double[] correctOutput)
     {
         getTanhOutput(inputs);
         backPropagate(correctOutput);
